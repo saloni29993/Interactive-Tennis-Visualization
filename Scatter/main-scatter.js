@@ -1,6 +1,9 @@
 
 var data = [];
 
+var width = 2200;
+var height = 1250;
+
 d3.selection.prototype.moveToFront = function() {
   return this.each(function(){
     this.parentNode.appendChild(this);
@@ -11,7 +14,7 @@ d3.selection.prototype.moveToFront = function() {
 //define row information
 function row(d) {
   return {
-    year: +d.year, // convert "Year" column to number
+    year: +d.year,
     aces: +d.aces,
     player: d.player,
     fastserve: +d.fastserve
@@ -24,28 +27,94 @@ d3.csv("data.csv", row, function(error, csv_data){
         data.push({ year: d.year, aces: d.aces, player: d.player, fastserve: d.fastserve });
     });
 
+    // Define the div for the tooltip
+    var div = d3.select("body").append("div")   
+        .attr("class", "tooltip")               
+        .style("opacity", 0);
+
     var scale_fastserve = d3.scale.linear()
-                    .domain([230, 200])
-                    .range([0, 700]);
+                    .domain([240, 190])
+                    .range([0, 1100]);
+                                
 
-    var scale_year = d3.scale.linear()
-                    .domain([2003, 2013])
-                    .range([0, 1000]);
+    var scale_aces = d3.scale.linear()
+                    .domain([0, 22])
+                    .range([0, 1600]);
+    
+    var header = d3.select("body")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", 100);
 
+    header.append("text")         
+          .attr("text-anchor", "middle")  
+          .style("font-size","45px")
+          .style("font-family", "Arial")   
+          .text("Faster the serve speed, more the aces")
+          .attr("transform","translate(1200,85)");                 
+                                       
     var data_svg = d3.select("body")
                     .append("svg")
-                    .attr("width", 1500)
-                    .attr("height", 1000)
-                    .attr("transform","translate(200,100)");
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("transform","translate(400,15)");
 
-    //Showing the X-axis showing winner_ace and Y-axis showing year                
-    var xAxis = d3.svg.axis().scale(scale_year).innerTickSize(7).outerTickSize(3).orient("bottom");
-    var yAxis = d3.svg.axis().scale(scale_fastserve).orient("left").outerTickSize(3);    
+    //Showing the X-axis showing year and Y-axis showing fast serve speed                
+    var xAxis = d3.svg.axis().scale(scale_aces).outerTickSize(3).orient("bottom").tickFormat(d3.format("d"));
+    var yAxis = d3.svg.axis().scale(scale_fastserve).orient("left").outerTickSize(3);
 
-    data_svg.append("svg:g").call(xAxis).attr("transform", "translate(30,750)");
-    data_svg.append("svg:g").call(yAxis).attr("transform", "translate(30,50)");     
+    data_svg.append("svg:g")
+            .call(xAxis)
+            .attr("transform", "translate(30,1150)")
+            .style("font-size","25px")
+            .style("font-family", "Arial");
+
+    data_svg.append("svg:g")
+            .call(yAxis)
+            .attr("transform", "translate(30,50)")
+            .style("font-size","25px")
+            .style("font-family", "Arial");
+
+    data_svg.append("text")      // text label for the x axis
+            .attr("transform", "translate(1560,1130)")
+            .style("text-anchor", "middle")
+            .text("Ace Score")
+            .style("font-size","30px")
+            .style("font-family", "Arial");
+
+    data_svg.append("text")     //text label for y axis   
+            .attr("transform", "rotate(-90)")
+            .attr("dx", "-7em")
+            .attr("dy", "2em")
+            .text("Fast Serve Speed (KPH)")
+            .style("text-anchor", "middle")
+            .style("font-size","30px")
+            .style("font-family", "Arial");
+
+
+    // var yAxisGrid = yAxis.ticks(8)      //yaxis gridlines
+    //                      .tickSize(width, 0)
+    //                      .tickFormat("")
+    //                      .orient("right");
+
+    // var xAxisGrid = xAxis.ticks(numberOfTicks)  //xaxis gridlines
+    //                      .tickSize(-height, 0)
+    //                      .tickFormat("")
+    //                      .orient("top");
+
+    // data_svg.append("svg:g")
+    //         .call(yAxisGrid);
+
+    // data_svg.append("svg:g")
+    //         .call(xAxisGrid);                                           
 
     var colorScale = d3.scale.category10(); 
+
+    // var colorScale = d3.scale.ordinal()
+    //                           .domain(["Andy Roddick", "Andy Murray", "Roger Fedrer", 
+    //                                     "Rafal Nadal", "Novak Djokovic"])
+    //                           .range(["#FF0000", "#009933" , "#0000FF", 
+    //                                     "#000099", "#FF00FF", "#F0F0F0"]);
 
     var radiusScale = d3.scale.linear().domain([0, 20]).range([15, 50]);
 
@@ -54,7 +123,8 @@ d3.csv("data.csv", row, function(error, csv_data){
     }
 
     function radius(d) {
-        return d.aces;
+        //return d.aces;
+        return 0.2;
     }
 
     // Defines a sort order so that the smallest dots are drawn on top.
@@ -66,21 +136,33 @@ d3.csv("data.csv", row, function(error, csv_data){
         .data(data)
         .enter()
         .append("g");
-        // .filter(function(d) { return d.gender =="w"; });
+
+    var hover_text = data_svg.append("text")      // Onhover diplaying player's name
+                            .attr("transform", "translate(420,135)")
+                            .attr("width", "200px")
+                            .attr("height", "100px"); 
+
+    // add diagonal line
+        data_g.append("line")
+            .attr("x1", scale_aces(1))
+            .attr("y1", scale_fastserve(190))
+            .attr("x2", scale_aces(21))
+            .attr("y2", scale_fastserve(225))
+            .attr("stroke-width", 15)
+            .attr("stroke", "#f0f0f0")
+            .style("z-index",-100);                           
 
     var data_circles = data_g.append("circle")
         .attr("cx", function(d) {
-            return scale_year(d.year);
+            return 30 + scale_aces(d.aces);
         })
         .attr("opacity", 0.4)
         .attr("cy", function(d) {
-            return scale_fastserve(d.fastserve);
+            return scale_fastserve(d.fastserve) + 40;
         })
         .attr("r", function(d) {
-              //console.log(radius(d));
             return radiusScale(radius(d));
         })
-        // .attr("fill", "#ff0000")
         .style("fill", function (d) {
             return colorScale(color(d));
         })
@@ -88,26 +170,46 @@ d3.csv("data.csv", row, function(error, csv_data){
             return d.player.replace(' ','_');
         })
         .on("mouseover", function(d) {
-            // var sel = d3.select(this);
-            // sel.moveToFront();
-          d3.selectAll("." +d.player.replace(' ','_')).moveToFront().style("opacity", 1).style("z-index",-100);
+            d3.selectAll("." +d.player.replace(' ','_'))
+                .moveToFront()
+                .style("opacity", 1); 
+
+            d3.selectAll("circle:not(." +d.player.replace(' ','_') +")")
+                .moveToFront()
+                .style("opacity", 0.2); 
+
+            div.transition()        
+                .duration(200)      
+                .style("opacity", 0.9); 
+
+            div .html("Fast Serve Speed: " + d.fastserve + "<br/> Ace Score: "  + d.aces) 
+                .style("left", (d3.event.pageX - 35) + "px")     
+                .style("top", (d3.event.pageY + 28) + "px");
+
+            hover_text.text(d.player)
+                .style("text-anchor", "middle")
+                .style("font-size","100px")
+                .style("font-family", "Arial")
+                .style("opacity", 0.2);              
         })
         .on("mouseout", function(d) {
-          d3.selectAll("." +d.player.replace(' ','_')).style("opacity", 0.4 ).style("z-index",0);
+            d3.selectAll("circle")
+                .style("opacity", 0.4)
+                .style("z-index",0);
+
+
+
+            div.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+
+            hover_text.text("");            
         })
         .sort(order);
 
 
-
-    // var data_text = data_g.append("text")
-    //     .text(function(d){return d.winner;})
-    //     .attr("x", function(d) {
-    //         return 5 + scale_year(d.year);
-    //     })
-    //     .attr("y", function(d) {
-    //         return 5 + scale_ace(d.winner_ace);
-    //     });
-
+            
+            // .attr("stroke-dasharray", "5,5");  //style of svg-line                                                  
  
 });
 
