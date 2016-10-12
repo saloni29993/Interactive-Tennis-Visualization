@@ -2,10 +2,6 @@
     <head>
         <script src="https://d3js.org/d3.v3.min.js"></script>
         <meta charset="utf-8"/>
-    </head>
-
-    <body>	
-        <script type="text/javascript" src="main-scatter.js"></script>
         <style>
         	div.tooltip {   
 			  position: absolute;           
@@ -21,6 +17,42 @@
 			  color: #000000;
 			  z-index: 900;         
 			}
+
+			div.info-div {
+				text-align: center;;
+				width: 100%;
+				height: 100%;
+				font: 20px Arial;
+			}
+
+			.head1 {
+				font-size: 40px;
+				margin-leftq: 200px;
+			}
+
+			.chart {
+				margin-top: 100px;
+			}
+			.description {
+				font-size: 40px;
+				width: 80%;
+			}
         </style>
+    </head>
+
+    <body>	
+    <center>
+	    <div class="head1"><h1>Faster the serve speed, more the aces</h1></div>
+	    <div class="description">
+	    	<p>
+	    		The chart presents an interesting trend of when the <i>Fast Serve Speed</i> of the player increaeses, it becomes difficult for the opponent to <i>Return</i> his serve and thus, the <i>Ace</i> score also increases. <b>Hover</b> over the dots to see the player's name and all his corresponding matches
+	    	</p>
+	    </div>	
+
+    </center>
+    
+    <div class="chart"></div>
+        <script type="text/javascript" src="main-scatter.js"></script>
+        
     </body>
 </html>

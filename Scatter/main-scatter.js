@@ -1,7 +1,6 @@
-
 var data = [];
 
-var width = 2200;
+var width = 2500;
 var height = 1250;
 
 d3.selection.prototype.moveToFront = function() {
@@ -39,27 +38,16 @@ d3.csv("data.csv", row, function(error, csv_data){
 
     var scale_aces = d3.scale.linear()
                     .domain([0, 22])
-                    .range([0, 1600]);
-    
-    var header = d3.select("body")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", 100);
+                    .range([0, 1600]);                
 
-    header.append("text")         
-          .attr("text-anchor", "middle")  
-          .style("font-size","45px")
-          .style("font-family", "Arial")   
-          .text("Faster the serve speed, more the aces")
-          .attr("transform","translate(1200,85)");                 
-                                       
-    var data_svg = d3.select("body")
+    var data_svg = d3.select(".chart")
                     .append("svg")
                     .attr("width", width)
                     .attr("height", height)
-                    .attr("transform","translate(400,15)");
+                    .attr("transform","translate(600,5)");
 
-    //Showing the X-axis showing year and Y-axis showing fast serve speed                
+ 
+    //Showing the X-axis showing aces and Y-axis showing fast serve speed                
     var xAxis = d3.svg.axis().scale(scale_aces).outerTickSize(3).orient("bottom").tickFormat(d3.format("d"));
     var yAxis = d3.svg.axis().scale(scale_fastserve).orient("left").outerTickSize(3);
 
@@ -89,32 +77,16 @@ d3.csv("data.csv", row, function(error, csv_data){
             .text("Fast Serve Speed (KPH)")
             .style("text-anchor", "middle")
             .style("font-size","30px")
-            .style("font-family", "Arial");
+            .style("font-family", "Arial");                                           
 
+    //var colorScale = d3.scale.category10(); 
 
-    // var yAxisGrid = yAxis.ticks(8)      //yaxis gridlines
-    //                      .tickSize(width, 0)
-    //                      .tickFormat("")
-    //                      .orient("right");
-
-    // var xAxisGrid = xAxis.ticks(numberOfTicks)  //xaxis gridlines
-    //                      .tickSize(-height, 0)
-    //                      .tickFormat("")
-    //                      .orient("top");
-
-    // data_svg.append("svg:g")
-    //         .call(yAxisGrid);
-
-    // data_svg.append("svg:g")
-    //         .call(xAxisGrid);                                           
-
-    var colorScale = d3.scale.category10(); 
-
-    // var colorScale = d3.scale.ordinal()
-    //                           .domain(["Andy Roddick", "Andy Murray", "Roger Fedrer", 
-    //                                     "Rafal Nadal", "Novak Djokovic"])
-    //                           .range(["#FF0000", "#009933" , "#0000FF", 
-    //                                     "#000099", "#FF00FF", "#F0F0F0"]);
+    var colorScale = d3.scale.ordinal()
+                              .domain(["Andy Roddick", "Andy Murray", "Roger Fedrer", 
+                                        "Rafal Nadal", "Novak Djokovic", "James Blake", 
+                                        "David N", "Fernando V", "Mardy Fish", "John Isner"])
+                              .range(["#FF0000", "#009933" , "#00BFFF", "#FF6600", "#FF00FF", "#6600FF", 
+                                    "#000000", "#3366FF", "#FFFF00", "#330066"]);
 
     var radiusScale = d3.scale.linear().domain([0, 20]).range([15, 50]);
 
@@ -123,9 +95,9 @@ d3.csv("data.csv", row, function(error, csv_data){
     }
 
     function radius(d) {
-        //return d.aces;
         return 0.2;
     }
+    
 
     // Defines a sort order so that the smallest dots are drawn on top.
     function order(a, b) {
@@ -138,19 +110,20 @@ d3.csv("data.csv", row, function(error, csv_data){
         .append("g");
 
     var hover_text = data_svg.append("text")      // Onhover diplaying player's name
-                            .attr("transform", "translate(500,135)")
+                            .attr("transform", "translate(400,135)")
                             .attr("width", "200px")
-                            .attr("height", "100px"); 
+                            .attr("height", "100px")
+                            .style("text-anchor", "end"); 
 
-    // add diagonal line
-        data_g.append("line")
-            .attr("x1", scale_aces(2))
-            .attr("y1", scale_fastserve(193.5))
-            .attr("x2", scale_aces(21))
-            .attr("y2", scale_fastserve(225))
-            .attr("stroke-width", 15)
-            .attr("stroke", "#f0f0f0")
-            .style("z-index",-100);                           
+    // adding linear line
+    data_g.append("line")
+        .attr("x1", scale_aces(2))
+        .attr("y1", scale_fastserve(193.5))
+        .attr("x2", scale_aces(21))
+        .attr("y2", scale_fastserve(226))
+        .attr("stroke-width", 15)
+        .attr("stroke", "#f0f0f0")
+        .style("z-index",-100);                           
 
     var data_circles = data_g.append("circle")
         .attr("cx", function(d) {
@@ -197,19 +170,13 @@ d3.csv("data.csv", row, function(error, csv_data){
                 .style("opacity", 0.4)
                 .style("z-index",0);
 
-
-
             div.transition()        
                 .duration(500)      
                 .style("opacity", 0);
 
             hover_text.text("");            
         })
-        .sort(order);
-
-
-            
-            // .attr("stroke-dasharray", "5,5");  //style of svg-line                                                  
+        .sort(order);                                                
  
 });
 
