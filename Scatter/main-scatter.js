@@ -138,14 +138,14 @@ d3.csv("data.csv", row, function(error, csv_data){
         .append("g");
 
     var hover_text = data_svg.append("text")      // Onhover diplaying player's name
-                            .attr("transform", "translate(420,135)")
+                            .attr("transform", "translate(500,135)")
                             .attr("width", "200px")
                             .attr("height", "100px"); 
 
     // add diagonal line
         data_g.append("line")
-            .attr("x1", scale_aces(1))
-            .attr("y1", scale_fastserve(190))
+            .attr("x1", scale_aces(2))
+            .attr("y1", scale_fastserve(193.5))
             .attr("x2", scale_aces(21))
             .attr("y2", scale_fastserve(225))
             .attr("stroke-width", 15)
