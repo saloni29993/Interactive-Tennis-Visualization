@@ -4,5 +4,7 @@ This visualization shows the ace score and the fast serve speed of tennis player
 
 ![alt tag](https://github.com/saloni29993/Interactive-Tennis-Visualization/blob/master/Screenshot.png)
 
+_______________________________________________________________________________________________________________________________________
+
 
 ![alt tag](https://github.com/saloni29993/Interactive-Tennis-Visualization/blob/master/ScreenshotHover.png)
